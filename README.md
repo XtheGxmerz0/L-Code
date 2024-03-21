@@ -1,1 +1,6 @@
-This firmware can be copy-pasted into Lego SPIKE and is meant to run with a stadard cartesian printer. Soon, a CoreXY version will be released.
+**Description**
+This firmware can be copy-pasted into any Lego SPIKE Prime Python project and work with the proper configuration. This is designed for Cartesian motion systems, but I plan to release a CoreXY control system soon.
+
+**CHANGELOG**
+v1.7.3 - March 21st 2024 - Base version
+
