@@ -26,6 +26,7 @@ from hub import light_matrix, port
 #G34: Z axis alignment
 
 #variable globalization
+
 global xpos
 global ypos
 global zposC
@@ -34,6 +35,7 @@ global iniz
 global iniz2
 
 #variable definitions
+
 xpos=0
 ypos=0
 zposC=0
@@ -53,6 +55,30 @@ tlist2=[60, 75, 105, 105, 110, 75, 45]
 absolute=0
 
 #function definitions
+
+def convert(ttc):
+  m=0
+  h=0
+  while ttc>=60:
+    if ttc>=60:
+      m+=1
+      ttc-=60
+      continue
+    if m>=60:
+      h+=1
+      m-=60
+      continue
+  s=ttc
+  s=round(s,2)
+  if s<10:
+    s="0"+str(s)
+  if m<10:
+    m="0"+str(m)
+  if h<10:
+    h="0"+str(h)
+  ct=str(h)+":"+str(m)+":"+str(s)
+  return(ct)
+
 def probe():
   global motoron
   if motoron==1:
@@ -61,6 +87,7 @@ def probe():
       time.sleep(0.2)
   else:
     print("Motors disabled")
+
 def probe1():
   global iniz2, motoron
   if motoron==1:
@@ -71,9 +98,11 @@ def probe1():
       time.sleep(0.2)
   else:
     print("Motors disabled")
+
 def measure():
   probe1()
   G01(iniz2, 20, 0, 0)
+
 def G00(x, y, feed, length, efeed):
   global xpos, ypos, zposC, zposD, motoron, absolute
   if motoron==1:
@@ -114,6 +143,7 @@ def G00(x, y, feed, length, efeed):
     light_matrix.write("G00")
   else:
     print("Motors disabled")
+
 def G01(z, feed, length, efeed):
   global xpos, ypos, zposC, zposD, motoron, absolute
   if motoron==1:
@@ -146,6 +176,7 @@ def G01(z, feed, length, efeed):
     light_matrix.write("G01")
   else:
     print("Motors disabled")
+
 def G02(z, feed, motorn):
   global xpos, ypos, zposC, zposD, motoron, absolute
   if motoron==1:
@@ -187,6 +218,7 @@ def G02(z, feed, motorn):
       print("Invalid Z motor")
   else:
     print("Motors disabled")
+
 def G07(length, feed):
   global motoron, ftype, flist, tlist, etemp, btemp
   if ftype in flist:
@@ -216,6 +248,7 @@ def G07(length, feed):
       print("Extruder temperature too low")
   else:
     print("Unknown filament type")
+
 def G15(tests, speed):
   i=0
   while i<tests:
@@ -227,6 +260,7 @@ def G15(tests, speed):
     print(tests-i, "tests remaining")
   print("G15 T", tests, "S", speed*8.1)
   light_matrix.write("G15")
+
 def G27(axis):
   global xpos, ypos, zposC, zposD
   if axis=="X":
@@ -244,6 +278,7 @@ def G27(axis):
     print("Invalid axis to home")
   print("G27 A",axis)
   light_matrix.write("G27")
+
 def G28():
   global xpos, ypos, zposC, zposD
   print("Homing all axes")
@@ -261,6 +296,7 @@ def G28():
   ypos=0
   print("G28")
   light_matrix.write("G28")
+
 def G29(tests):
   G28()
   i=0
@@ -281,6 +317,7 @@ def G29(tests):
   G00(-xlength, -ylength, 100, 0, 0)
   print("G29 R1:",rows)
   light_matrix.write("G29")
+
 def G34(tests):
   iniz2=0
   G28()
@@ -317,26 +354,37 @@ def G34(tests):
     light_matrix.write("G34")
   else:
     print("Invalid number of tests")
+
 def M02(timet):
   time.sleep(timet)
   print("M02 T",timet)
   light_matrix.write("M02")
-def M30():
-  G28()
-  print("M30")
-  print("Sequence completed")
-  light_matrix.write("M30")
-  light_matrix.write("Done")
+
 def M17():
   global motoron
   motoron=1
   print("M17")
   light_matrix.write("M17")
+
 def M18():
   global motoron
   motoron=0
   print("M18")
   light_matrix.write("M18")
+
+def M30(seq):
+  start=time.time()
+  if seq==1:
+    G28()
+    G34(3)
+    G29(4)
+  #elif...
+  end=time.time()
+  print("M30",seq)
+  print("Sequence",seq,"completed in",convert(end-start),"seconds")
+  light_matrix.write("M30")
+  light_matrix.write("Done")
+
 def M103(temp):
   global ettemp, etemp
   ettemp=temp
@@ -352,6 +400,7 @@ def M103(temp):
       etemp+=1
       time.sleep(0.4)
       print("Current Extruder Temp:",etemp,"/",ettemp,"degrees")
+
 def M105(temp):
   global bttemp, btemp
   bttemp=temp
@@ -367,16 +416,19 @@ def M105(temp):
       btemp+=1
       time.sleep(0.4)
       print("Current Extruder Temp:",btemp,"/",bttemp,"degrees")
+
 def M271(type):
   global ftype
   ftype=type
   print("M271 T",type)
   light_matrix.write("M271")
+
 def M278(diam):
   global fdim
   fdim=diam
   print("M278 D",diam)
   light_matrix("M278")
+
 def M502():
   global xpos, ypos, zposC, zposD, xlength, ylength, iniz, iniz2, motoron
   global etemp, btemp, ettemp, bttemp, ftype, fdim, absolute
