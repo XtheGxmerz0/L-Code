@@ -1,8 +1,9 @@
 #L-Code: The first firmware for Lego 3D printer architectures
-#The latest version is version 1.7.3
+#The latest version is version 1.8.4
 
 #package imports
 import time, force_sensor, motor
+from colorama import Fore as color
 from hub import light_matrix, port
 
 #Port A: X
@@ -24,6 +25,17 @@ from hub import light_matrix, port
 #G28: home all axes using force sensor
 #G29: 3x3 auto leveling
 #G34: Z axis alignment
+#M02: wait
+#M17: activate motors
+#M18: deactivate motors
+#M30: run custom sequence
+#M103: set extruder temp
+#M105: set bed temp
+#M271: set filament type
+#M278: set filamnt diameter
+#M355: deactivate coreXY mode
+#M356: activate coreXY mode
+#M502: reset parameters
 
 #variable globalization
 
@@ -53,6 +65,7 @@ flist=["PLA", "PETG", "ABS", "ASA", "PC", "PA", "TPU"]
 tlist=[205, 250, 235, 245, 270, 285, 225]
 tlist2=[60, 75, 105, 105, 110, 75, 45]
 absolute=0
+corexy=0
 
 #function definitions
 
@@ -78,7 +91,6 @@ def convert(ttc):
     h="0"+str(h)
   ct=str(h)+":"+str(m)+":"+str(s)
   return(ct)
-
 def probe():
   global motoron
   if motoron==1:
@@ -87,7 +99,6 @@ def probe():
       time.sleep(0.2)
   else:
     print("Motors disabled")
-
 def probe1():
   global iniz2, motoron
   if motoron==1:
@@ -98,52 +109,85 @@ def probe1():
       time.sleep(0.2)
   else:
     print("Motors disabled")
-
 def measure():
   probe1()
   G01(iniz2, 20, 0, 0)
-
 def G00(x, y, feed, length, efeed):
-  global xpos, ypos, zposC, zposD, motoron, absolute
+  global xpos, ypos, zposC, zposD, motoron, absolute, corexy
   if motoron==1:
     if absolute==0:
-      if x>0:
-        motor.run_for_degrees(port.A, x, feed)
-        G07(length, efeed)
+      if corexy==0:
+        if x>0:
+          motor.run_for_degrees(port.A, x, feed)
+          G07(length, efeed)
+        else:
+          motor.run_for_degrees(port.A, x, -feed)
+          G07(length, efeed)
+        if y>0:
+          motor.run_for_degrees(port.B, y, feed)
+          G07(length, efeed)
+        else:
+          motor.run_for_degrees(port.B, y, -feed)
+          G07(length, efeed)
       else:
-        motor.run_for_degrees(port.A, x, -feed)
-        G07(length, efeed)
-      if y>0:
-        motor.run_for_degrees(port.B, y, feed)
-        G07(length, efeed)
-      else:
-        motor.run_for_degrees(port.B, y, -feed)
-        G07(length, efeed)
+        if x>0:
+          motor.run_for_degrees(port.A, x, -feed)
+          motor.run_for_degrees(port.B, x, -feed)
+          G07(length, efeed)
+        else:
+          motor.run_for_degrees(port.A, x, feed)
+          motor.run_for_degrees(port.B, x, feed)
+          G07(length, efeed)
+        if y>0:
+          motor.run_for_degrees(port.A, y, feed)
+          motor.run_for_degrees(port.B, y, -feed)
+          G07(length, efeed)
+        else:
+          motor.run_for_degrees(port.A, y, -feed)
+          motor.run_for_degrees(port.B, y, feed)
+          G07(length, efeed)
       xpos+=x
       ypos+=y
     else:
       xn=x-xpos
       yn=y-ypos
-      if xn>0:
-        motor.run_for_degrees(port.A, xn, feed)
-        G07(length, efeed)
+      if corexy==0:
+        if xn>0:
+          motor.run_for_degrees(port.A, xn, feed)
+          G07(length, efeed)
+        else:
+          motor.run_for_degrees(port.A, xn, -feed)
+          G07(length, efeed)
+        if yn>0:
+          motor.run_for_degrees(port.B, yn, feed)
+          G07(length, efeed)
+        else:
+          motor.run_for_degrees(port.B, yn, -feed)
+          G07(length, efeed)
       else:
-        motor.run_for_degrees(port.A, xn, -feed)
-        G07(length, efeed)
-      if yn>0:
-        motor.run_for_degrees(port.B, yn, feed)
-        G07(length, efeed)
-      else:
-        motor.run_for_degrees(port.B, yn, -feed)
-        G07(length, efeed)
+        if xn>0:
+          motor.run_for_degrees(port.A, xn, -feed)
+          motor.run_for_degrees(port.B, xn, -feed)
+          G07(length, efeed)
+        else:
+          motor.run_for_degrees(port.A, xn, feed)
+          motor.run_for_degrees(port.B, xn, feed)
+          G07(length, efeed)
+        if yn>0:
+          motor.run_for_degrees(port.A, yn, feed)
+          motor.run_for_degrees(port.B, yn, -feed)
+          G07(length, efeed)
+        else:
+          motor.run_for_degrees(port.A, yn, -feed)
+          motor.run_for_degrees(port.B, yn, feed)
+          G07(length, efeed)
       xpos+=xn
       ypos+=yn
-    print("G00 X",x,"Y",y,"F",feed,"EF",efeed,"E",length)
-    print("New Position: X",xpos,"Y",ypos,"ZC",zposC,"ZD",zposD)
+    print("G00 X",x,"Y",y,"F",feed,"EF",efeed,"E",length, color.GREEN)
+    print("New Position: X",xpos,"Y",ypos,"ZC",zposC,"ZD",zposD, color.GREEN)
     light_matrix.write("G00")
   else:
     print("Motors disabled")
-
 def G01(z, feed, length, efeed):
   global xpos, ypos, zposC, zposD, motoron, absolute
   if motoron==1:
@@ -176,7 +220,6 @@ def G01(z, feed, length, efeed):
     light_matrix.write("G01")
   else:
     print("Motors disabled")
-
 def G02(z, feed, motorn):
   global xpos, ypos, zposC, zposD, motoron, absolute
   if motoron==1:
@@ -218,7 +261,6 @@ def G02(z, feed, motorn):
       print("Invalid Z motor")
   else:
     print("Motors disabled")
-
 def G07(length, feed):
   global motoron, ftype, flist, tlist, etemp, btemp
   if ftype in flist:
@@ -248,7 +290,6 @@ def G07(length, feed):
       print("Extruder temperature too low")
   else:
     print("Unknown filament type")
-
 def G15(tests, speed):
   i=0
   while i<tests:
@@ -260,7 +301,6 @@ def G15(tests, speed):
     print(tests-i, "tests remaining")
   print("G15 T", tests, "S", speed*8.1)
   light_matrix.write("G15")
-
 def G27(axis):
   global xpos, ypos, zposC, zposD
   if axis=="X":
@@ -278,7 +318,6 @@ def G27(axis):
     print("Invalid axis to home")
   print("G27 A",axis)
   light_matrix.write("G27")
-
 def G28():
   global xpos, ypos, zposC, zposD
   print("Homing all axes")
@@ -296,7 +335,6 @@ def G28():
   ypos=0
   print("G28")
   light_matrix.write("G28")
-
 def G29(tests):
   G28()
   i=0
@@ -317,7 +355,6 @@ def G29(tests):
   G00(-xlength, -ylength, 100, 0, 0)
   print("G29 R1:",rows)
   light_matrix.write("G29")
-
 def G34(tests):
   iniz2=0
   G28()
@@ -354,24 +391,20 @@ def G34(tests):
     light_matrix.write("G34")
   else:
     print("Invalid number of tests")
-
 def M02(timet):
   time.sleep(timet)
   print("M02 T",timet)
   light_matrix.write("M02")
-
 def M17():
   global motoron
   motoron=1
   print("M17")
   light_matrix.write("M17")
-
 def M18():
   global motoron
   motoron=0
   print("M18")
   light_matrix.write("M18")
-
 def M30(seq):
   start=time.time()
   if seq==1:
@@ -384,7 +417,6 @@ def M30(seq):
   print("Sequence",seq,"completed in",convert(end-start),"seconds")
   light_matrix.write("M30")
   light_matrix.write("Done")
-
 def M103(temp):
   global ettemp, etemp
   ettemp=temp
@@ -400,7 +432,6 @@ def M103(temp):
       etemp+=1
       time.sleep(0.4)
       print("Current Extruder Temp:",etemp,"/",ettemp,"degrees")
-
 def M105(temp):
   global bttemp, btemp
   bttemp=temp
@@ -416,28 +447,35 @@ def M105(temp):
       btemp+=1
       time.sleep(0.4)
       print("Current Extruder Temp:",btemp,"/",bttemp,"degrees")
-
 def M271(type):
   global ftype
   ftype=type
   print("M271 T",type)
   light_matrix.write("M271")
-
 def M278(diam):
   global fdim
   fdim=diam
   print("M278 D",diam)
   light_matrix("M278")
-
+def M355():
+  global corexy
+  corexy=0
+  print("M355")
+  light_matrix.write("M355")
+def M356():
+  global corexy
+  corexy=1
+  print("M356")
+  light_matrix.write("M356")
 def M502():
   global xpos, ypos, zposC, zposD, xlength, ylength, iniz, iniz2, motoron
-  global etemp, btemp, ettemp, bttemp, ftype, fdim, absolute
+  global etemp, btemp, ettemp, bttemp, ftype, fdim, absolute, corexy
   xpos=0
   ypos=0
   zposC=0
   zposD=0
-  xlength=1080
-  ylength=1080
+  xlength=2100
+  ylength=2100
   iniz=0
   iniz2=0
   motoron=0
@@ -448,5 +486,6 @@ def M502():
   ftype="PLA"
   fdim=1.75
   absolute=0
+  corexy=0
 
 # == commands below ==
