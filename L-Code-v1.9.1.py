@@ -1,8 +1,8 @@
 #L-Code: The first firmware for Lego 3D printer architectures
-#The latest version is version 1.8.4
+#The latest version is version 1.9.1
 
 #package imports
-import time, force_sensor, motor
+import time, random, sys, force_sensor, motor
 from colorama import Fore as color
 from hub import light_matrix, port
 
@@ -66,9 +66,14 @@ tlist=[205, 250, 235, 245, 270, 285, 225]
 tlist2=[60, 75, 105, 105, 110, 75, 45]
 absolute=0
 corexy=0
+key="INIT"
 
 #function definitions
-
+def genkey(root):
+  global key
+  key=random.randint(0,1000000000)
+  #1 billion
+  
 def convert(ttc):
   m=0
   h=0
@@ -489,3 +494,18 @@ def M502():
   corexy=0
 
 # == commands below ==
+while True:
+  action=input("Next action: > ")
+  if "RUN" in action:
+    exec(action[action.rfind("RUN "):])
+  elif action=="EXIT":
+    print(color.RED)
+    sys.exit("Exiting program...")
+  elif "SEQ" in action:
+    exec("M30 ("+action[action.rfind("SEQ "):]+")")
+  elif action=="FRESET":
+    print("Resetting to factory default...")
+    G28()
+    M502()
+  else:
+    prinr("Invalid action to perform")
