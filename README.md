@@ -8,3 +8,4 @@ This firmware can be copy-pasted into any Lego SPIKE Prime Python project and wo
 
 **v1.8.4** - March 22nd 2024 - Added CoreXY mode
 
+**v1.9.1** - March 27th 2024 - Added login and live interface
