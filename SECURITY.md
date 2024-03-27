@@ -4,10 +4,11 @@
 
 Here is a table of all of our versions, along with whether they are compatible with recent security updates.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.8.x   | ✅ |
-| 1.7.x   | ✅                |
+| Version | Supported |
+| ------- | ----------|
+| 1.9.x | ✅ |
+| 1.8.x | ✅ |
+| 1.7.x | ✅ |
 
 ### **Reporting a Vulnerability**
 
