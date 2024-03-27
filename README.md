@@ -1,4 +1,4 @@
-## **Description**
+# **Description**
 
 This firmware can be copy-pasted into any Lego SPIKE Prime Python project and work with the proper configuration. This is designed for Cartesian motion systems, but I plan to release a CoreXY control system soon.
 
