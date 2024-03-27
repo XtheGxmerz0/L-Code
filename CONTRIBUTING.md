@@ -1,4 +1,4 @@
-## **Welcome!**
+# **Welcome!**
 Thank you for contributing to our project! Please read the [Code of Conduct](https://github.com/XtheGxmerz0/L-Code/blob/main/CODE_OF_CONDUCT.md) before editing or posting anything.
 
 ### **What can I contribute towards?**
