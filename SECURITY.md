@@ -1,6 +1,6 @@
 # Security Policy
 
-### **Supported Versions**
+## **Supported Versions**
 
 Here is a table of all of our versions, along with whether they are compatible with recent security updates.
 
@@ -10,7 +10,7 @@ Here is a table of all of our versions, along with whether they are compatible w
 | 1.8.x | ✅ |
 | 1.7.x | ✅ |
 
-### **Reporting a Vulnerability**
+## **Reporting a Vulnerability**
 
 To report a security vulnerability, please contact **infokcalepyrdiicontact@gmail.com**.
 You can also post this in a discussion (please title **"Security vulnerability"**.)
