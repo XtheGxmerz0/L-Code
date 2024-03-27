@@ -67,13 +67,31 @@ tlist2=[60, 75, 105, 105, 110, 75, 45]
 absolute=0
 corexy=0
 key="INIT"
+us=[]
+ps=[]
+signedin=0
 
 #function definitions
-def genkey(root):
+def signin():
+  global signedin
+  signedin=1
+  u=input("Username: ")
+  p=input("Password: ")
+  if u in us:
+    if ps[us.index(u)]==p:
+      print("Access granted")
+      
+    else:
+      print("Invalid Credentials")
+  else:
+    print("Invalid Credentials")
+def signout():
+  global signedin
+  signedin=0
+  print("Signing out...")
+def genkey():
   global key
   key=random.randint(0,1000000000)
-  #1 billion
-  
 def convert(ttc):
   m=0
   h=0
@@ -496,16 +514,23 @@ def M502():
 # == commands below ==
 while True:
   action=input("Next action: > ")
-  if "RUN" in action:
-    exec(action[action.rfind("RUN "):])
-  elif action=="EXIT":
-    print(color.RED)
-    sys.exit("Exiting program...")
-  elif "SEQ" in action:
-    exec("M30 ("+action[action.rfind("SEQ "):]+")")
-  elif action=="FRESET":
-    print("Resetting to factory default...")
-    G28()
-    M502()
+  if signedin==1:
+    if "RUN" in action:
+      exec(action[action.rfind("RUN "):])
+    elif action=="EXIT":
+      print(color.RED)
+      sys.exit("Exiting program...")
+    elif "SEQ" in action:
+      exec("M30 ("+action[action.rfind("SEQ "):]+")")
+    elif action=="FRESET":
+      print("Resetting to factory default...")
+      G28()
+      M502()
+    elif action=="SOUT":
+      signout()
+      signin()
+    else:
+      print("Invalid action to perform")
   else:
-    prinr("Invalid action to perform")
+    print("Please sign in")
+    signin()
