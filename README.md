@@ -12,3 +12,8 @@ This firmware can be copy-pasted into any Lego SPIKE Prime Python project and wo
 
 ### **v1.9.1** - March 27th 2024
 - Added login and live interface
+
+### **v2.0.7** - March 29th 2024
+- Added more colorful interface
+- Fixed various bugs
+- Increased reaction time
