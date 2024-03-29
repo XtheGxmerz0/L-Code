@@ -6,10 +6,10 @@ Here is a table of all of our versions, along with whether they are compatible w
 
 | Version | Supported |
 | ------- | ----------|
+| 2.0.x | ✅ |
 | 1.9.x | ✅ |
 | 1.8.x | ✅ |
 | 1.7.x | ✅ |
-
 ## **Reporting a Vulnerability**
 
 To report a security vulnerability, please contact **infokcalepyrdiicontact@gmail.com**.
