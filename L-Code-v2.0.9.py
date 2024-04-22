@@ -1,5 +1,5 @@
 #L-Code: The first firmware for Lego 3D printer architectures
-#The latest version is version 2.0.7
+#The latest version is version 2.0.9
 
 #package imports
 import time, random, force_sensor, motor
@@ -36,6 +36,8 @@ from hub import light_matrix, port
 #M278: set filamnt diameter
 #M355: deactivate coreXY mode
 #M356: activate coreXY mode
+#M403: deactivate absolute mode
+#M404: activate absolute mode
 #M502: reset parameters
 
 #variable globalization
@@ -579,6 +581,13 @@ def M356():
   print(color.GREEN, "M356")
   light_matrix.write("M356")
 
+def M403():
+  global absolute
+  absolute=0
+
+def M404():
+  global absolute
+  absolute=1
 
 def M502():
   global xpos, ypos, zposC, zposD, xlength, ylength, iniz, iniz2, motoron
