@@ -17,3 +17,6 @@ This firmware can be copy-pasted into any Lego SPIKE Prime Python project and wo
 - Added more colorful interface
 - Fixed various bugs
 - Increased reaction time
+
+### **v2.0.9** - April 26th 2024
+- Added absolute / relative mode
